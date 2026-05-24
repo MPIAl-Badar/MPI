@@ -88,7 +88,6 @@ select.input-f option{background:var(--surface2);color:var(--text);}
 @keyframes spin{to{transform:rotate(360deg);}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .anim{animation:fadeIn .25s ease;}
-.spin-anim{animation:spin 0.8s linear infinite;}
 
 /* Hero */
 .hero{background:linear-gradient(135deg,var(--surface2) 0%,#1a2332 100%);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
@@ -104,6 +103,182 @@ select.input-f option{background:var(--surface2);color:var(--text);}
 .stat-label{font-size:10px;color:var(--muted);margin-top:4px;}
 
 /* Shared banner */
+.shared-banner{background:linear-gradient(90deg,rgba(63,185,80,.15),rgba(88,166,255,.15));border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:8px 14px;font-size:11px;color:var(--green);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+
+/* Avatar */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;overflow:hidden;}
+
+/* Back button */
+.back-btn{display:flex;align-items:center;gap:6px;background:transparent;border:none;color:var(--accent);font-size:13px;margin-bottom:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;}
+
+/* Photo grid */
+.photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px;}
+.photo-cell{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--surface2);cursor:pointer;}
+.photo-cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s;}
+.photo-cell:hover img{transform:scale(1.05);}
+.photo-del-btn{position:absolute;top:5px;right:5px;background:rgba(13,17,23,.75);backdrop-filter:blur(4px);border:none;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;line-height:1;opacity:0;transition:opacity .2s;}
+.photo-cell:hover .photo-del-btn{opacity:1;}
+.photo-del-btn:hover{background:var(--red);}
+.album-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;transition:border-color .2s;}
+.album-card:hover{border-color:rgba(88,166,255,.25);}
+.upload-zone{background:var(--surface2);border:1.5px dashed var(--border);border-radius:10px;padding:24px 16px;text-align:center;cursor:pointer;transition:border-color .2s;}
+.upload-zone:hover{border-color:var(--accent);}
+
+/* RPS file card */
+.rps-file-card{background:rgba(240,180,41,.07);border:1px solid rgba(240,180,41,.25);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <div class="logo-icon">🎓</div>
+        <div>
+          <div class="logo-title">Portal Kelas</div>
+          <div class="logo-sub">STAI Al-Badar Cipulus</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="kelas-toggle">
+          <button class="kelas-btn active" id="btn-mpi1" onclick="switchKelas('MPI-I')">MPI-I</button>
+          <button class="kelas-btn" id="btn-mpi2" onclick="switchKelas('MPI-II')">MPI-II</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="content"></div>
+
+  <div id="nav">
+    <button class="nav-item active" id="nav-beranda" onclick="switchTab('beranda')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10"/></svg>
+      <div class="nav-dot"></div>
+      <span>Beranda</span>
+    </button>
+    <button class="nav-item" id="nav-jadwal" onclick="switchTab('jadwal')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3M16 2v3M3 7h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+      <div class="nav-dot"></div>
+      <span>Jadwal</span>
+    </button>
+    <button class="nav-item" id="nav-materi" onclick="switchTab('materi')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/></svg>
+      <div class="nav-dot"></div>
+      <span>Materi</span>
+    </button>
+    <button class="nav-item" id="nav-tugas" onclick="switchTab('tugas')" style="position:relative">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span id="tugas-badge" class="badge-dot" style="display:none"></span>
+      <div class="nav-dot"></div>
+      <span>Tugas</span>
+    </button>
+    <button class="nav-item" id="nav-presentasi" onclick="switchTab('presentasi')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+      <div class="nav-dot"></div>
+      <span>Presentasi</span>
+    </button>
+    <button class="nav-item" id="nav-dokumentasi" onclick="switchTab('dokumentasi')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <div class="nav-dot"></div>
+      <span>Galeri</span>
+    </button>
+    <button class="nav-item" id="nav-perpustakaan" onclick="switchTab('perpustakaan')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <div class="nav-dot"></div>
+      <span>Pustaka</span>
+    </button>
+    <button class="nav-item" id="nav-pengumuman" onclick="switchTab('pengumuman')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5.882V19.24a1.76 1.76 0 0 1-3.417.592l-2.147-6.15M18 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM4.268 10.625l8.732-6.743"/></svg>
+      <div class="nav-dot"></div>
+      <span>Info</span>
+    </button>
+  </div>
+</div>
+
+<div id="modal-container"></div>
+
+<div id="toast"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const JADWAL = {
+  "MPI-I": [
+    { hari:"Selasa", jam:"08.40-10.20", ruang:"Lab",  kode:"UA 03014", matkul:"Komputer", sks:4, dosen:"Dede Irawan, S.Kom." },
+    { hari:"Selasa", jam:"12.30-14.10", ruang:"2",    kode:"NAS 03001", matkul:"Bahasa Indonesia", sks:2, dosen:"Dwi Ajeng Maulidiya Makalao, M.Pd." },
+    { hari:"Selasa", jam:"14.10-15.50", ruang:"2",    kode:"UA 03002", matkul:"Bahasa Arab", sks:3, dosen:"Fadilah Rohman, S.Pd., M.Pd." },
+    { hari:"Rabu",   jam:"07.00-08.40", ruang:"2",    kode:"UA 03001", matkul:"Ilmu Kalam", sks:2, dosen:"Dr. H. Zaerrur Ropiq, S.Sy., M.Hum." },
+    { hari:"Rabu",   jam:"10.20-12.00", ruang:"2",    kode:"UA 03005", matkul:"Ulumul Hadits", sks:2, dosen:"Sansan Saefulimillah, S.H., M.Pd." },
+    { hari:"Rabu",   jam:"12.30-14.10", ruang:"2",    kode:"UA 03003", matkul:"Bahasa Inggris", sks:2, dosen:"Ihya Ulumudin, S.Pd.I., M.Pd." },
+    { hari:"Kamis",  jam:"07.00-08.40", ruang:"2",    kode:"UA 03006", matkul:"Ulumul Qur'an", sks:2, dosen:"Moh. Sugandi, S.Sos., M.Pt." },
+    { hari:"Kamis",  jam:"08.40-10.20", ruang:"2",    kode:"TAR 03002", matkul:"Dasar - Dasar Pendidikan", sks:2, dosen:"Zam zam Lukmanul Jamil, S.Pd.I., M.Pd." },
+    { hari:"Kamis",  jam:"10.20-12.00", ruang:"2",    kode:"UA 03004", matkul:"Ushul Fiqh", sks:2, dosen:"Sansan Saefulimillah, S.H., M.Pd." },
+  ],
+  "MPI-II": [
+    { hari:"Selasa", jam:"08.40-10.20", ruang:"RK 2", kode:"UA 03010", matkul:"Sejarah Peradaban Islam", sks:2, dosen:"Jaelani Husni, M.Hum." },
+    { hari:"Selasa", jam:"10.20-12.00", ruang:"RK 2", kode:"UA 03008", matkul:"Wawasan Pesantren", sks:2, dosen:"Moh. Sugandi, S.Sos., M.Pd." },
+    { hari:"Selasa", jam:"12.30-14.10", ruang:"RK 2", kode:"NAS 03003", matkul:"Kewarganegaraan", sks:3, dosen:"Dzikri Abazis Subekti, M.H." },
+    { hari:"Selasa", jam:"14.10-15.50", ruang:"RK 2", kode:"UA 03007", matkul:"Aswaja Annahdliyan", sks:2, dosen:"Sansan Saefulimillah, S.H., M.Pd." },
+    { hari:"Rabu",   jam:"07.00-08.40", ruang:"RK 2", kode:"UA 03009", matkul:"Metodologi Studi Islam", sks:3, dosen:"Rizki, S.Ag., M.Pd." },
+    { hari:"Rabu",   jam:"08.40-10.20", ruang:"RK 2", kode:"UA 03010", matkul:"Akhlak Tasawuf", sks:2, dosen:"Ihya Ulumudin, S.Pd.I., M.Pd." },
+    { hari:"Rabu",   jam:"10.20-12.00", ruang:"RK 2", kode:"UA 03009", matkul:"Ilmu Fiqh", sks:2, dosen:"Mohamad Bahrum, M.Si." },
+    { hari:"Kamis",  jam:"08.40-10.20", ruang:"RK 2", kode:"UA 03009", matkul:"Filsafat Umum", sks:2, dosen:"Zam zam Lukmanul Jamil, S.Pd.I., M.Pd." },
+    { hari:"Kamis",  jam:"10.20-12.00", ruang:"RK 2", kode:"NAS 03002", matkul:"Pancasila", sks:3, dosen:"Mohamad Bahrum, M.Si." },
+    { hari:"Kamis",  jam:"12.30-14.10", ruang:"RK 2", kode:"MPI 03001", matkul:"Dasar - Dasar Manajemen", sks:2, dosen:"Ujang Miftahudin, S.Pd., M.Pd." },
+  ],
+};
+
+const ANGGOTA_DEFAULT = [
+  { nama:"Aep Mulyana", jabatan:"Kosma", foto:"", bio:"Pemimpin yang tangguh.", cita:"Menteri Pendidikan", status:"Fokus Belajar", harapan:"Semoga kebijakan pendidikan makin merata ke seluruh pelosok negeri." },
+  { nama:"Aldi Rizaldi", jabatan:"Wakil Kosma", foto:"", bio:"Siap membantu 24/7.", cita:"Pengusaha Sukses", status:"Merintis Karir", harapan:"Berantas korupsi sampai bersih, Pak!" },
+  { nama:"M. Zian Mustopa", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"M. Azhar Alif Faozan", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"M. Azhar Najmuddin", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"M. Faisal", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"Iwan Supriatna", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"M. Ramli", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"Siva Julianti", jabatan:"Bendahara", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"Laila Nurjalila", jabatan:"Sekretaris", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"Neng Zaqiah", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+  { nama:"Hidayatul Fahmi", jabatan:"PJ MK", foto:"", bio:"", cita:"", status:"", harapan:"" },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {
+  tab: "beranda",
+  kelas: "MPI-I",
+  selectedMatkul: null,
+  tugasData: [],
+  pengumumanData: [],
+  presentasiData: [],
+  anggota: ANGGOTA_DEFAULT,
+  dokumentasiData: [],
+  rpsData: {},
+  perpustakaanData: [],
+};
+
+const SK = { tugas:"mpi_tugas", pengumuman:"mpi_pengumuman", presentasi:"mpi_presentasi", anggota:"mpi_anggota", kelas:"mpi_kelas", dokumentasi:"mpi_dokumentasi", rps:"mpi_rps", perpustakaan:"mpi_perpustakaan" };
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){}
+}
+function load(key) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch(e){ return null; }
+}
+function loadAll() {
+  const t = load(SK.tugas); if(t) state.tugasData = t;
+  const p = load(SK.pengumuman); if(p) state.pengumumanData = p;
+  const pr = load(SK.presentasi); if(pr) state.presentasiData = pr;
+  const a = load(SK.anggota); if(a) state.anggota = a;
+  const k = load(SK.kelas); if(k) state.kelas = k;
+  const dok = load(SK.dokumentasi); if(dok) state.dokumentasiData = dok;
+  const rps = load(SK.rps); if(rps) state.rpsData = rps;
+  const perp = load(SK.perpustakaan); if(perp) state.perpustakaanData = perp;
+}
+
+// ─── HELPERS ─────────────────────/* Shared banner */
 .shared-banner{background:linear-gradient(90deg,rgba(63,185,80,.15),rgba(88,166,255,.15));border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:8px 14px;font-size:11px;color:var(--green);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
 
 /* Avatar */
